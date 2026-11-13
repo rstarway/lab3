@@ -4,7 +4,7 @@ using Model;
 namespace BusinessLogic
 {
     /// <summary>
-    /// Бизнес-логика учета поступлений: работает с записями через репозиторий.
+    /// Бизнес-логика учета поступлений: проверяет данные и работает с записями через репозиторий.
     /// </summary>
     public class Logic : ILogic
     {
@@ -31,48 +31,54 @@ namespace BusinessLogic
         public int Cells { get; } = 10;
 
         /// <summary>
-        /// Добавляет новую запись о поступлении.
+        /// Проверяет данные и добавляет новую запись о поступлении.
         /// </summary>
         /// <param name="name">ФИО</param>
         /// <param name="age">Возраст</param>
         /// <param name="date">Дата поступления</param>
         /// <param name="cause">Причина смерти</param>
         /// <param name="cell">Номер камеры</param>
-        /// <returns>true, если запись добавлена.</returns>
-        public bool Add(string name, int age, DateTime date, string cause, int cell)
+        /// <returns>Пустая строка, если запись добавлена, иначе текст ошибки.</returns>
+        public string Add(string name, int age, DateTime date, string cause, int cell)
         {
-            if (validator.Check(name, age, date, cause) != "")
-                return false;
+            string err = validator.Check(name, age, date, cause);
+            if (err != "")
+                return err;
             if (!cellService.CanUse(cell, 0, Cells))
-                return false;
+                return "Камера занята или нет такой (1-" + Cells + ")";
 
             Record r = new Record();
-            r.Name = name;
+            r.Name = name.Trim();
             r.Age = age;
-            r.Date = date;
-            r.Cause = cause;
+            r.Date = date.Date;
+            r.Cause = cause.Trim();
             r.Cell = cell;
-            return repository.Add(r);
+            if (!repository.Add(r))
+                return "Не удалось сохранить запись";
+            return "";
         }
 
         /// <summary>
         /// Возвращает список всех записей.
         /// </summary>
+        /// <returns>Список всех записей по возрастанию ID.</returns>
         public List<Record> GetAll()
         {
             return repository.ReadAll();
         }
 
         /// <summary>
-        /// Возвращает запись с указанным id или null, если такой нет.
+        /// Возвращает запись с указанным id.
         /// </summary>
+        /// <param name="id">Номер записи</param>
+        /// <returns>Найденная запись или null, если такой нет.</returns>
         public Record GetById(int id)
         {
             return repository.ReadById(id);
         }
 
         /// <summary>
-        /// Изменяет запись с указанным id.
+        /// Проверяет данные и изменяет запись с указанным id.
         /// </summary>
         /// <param name="id">Номер изменяемой записи</param>
         /// <param name="name">ФИО</param>
@@ -80,30 +86,33 @@ namespace BusinessLogic
         /// <param name="date">Дата поступления</param>
         /// <param name="cause">Причина смерти</param>
         /// <param name="cell">Номер камеры</param>
-        /// <returns>true, если запись изменена.</returns>
-        public bool Edit(int id, string name, int age, DateTime date, string cause, int cell)
+        /// <returns>Пустая строка, если запись изменена, иначе текст ошибки.</returns>
+        public string Edit(int id, string name, int age, DateTime date, string cause, int cell)
         {
-            if (validator.Check(name, age, date, cause) != "")
-                return false;
-            if (!cellService.CanUse(cell, id, Cells))
-                return false;
-
+            string err = validator.Check(name, age, date, cause);
+            if (err != "")
+                return err;
             Record r = repository.ReadById(id);
             if (r == null)
-                return false;
-            r.Name = name;
+                return "Записи с таким id нет";
+            if (!cellService.CanUse(cell, id, Cells))
+                return "Камера занята или нет такой (1-" + Cells + ")";
+
+            r.Name = name.Trim();
             r.Age = age;
-            r.Date = date;
-            r.Cause = cause;
+            r.Date = date.Date;
+            r.Cause = cause.Trim();
             r.Cell = cell;
-            return repository.Update(r);
+            if (!repository.Update(r))
+                return "Не удалось сохранить запись";
+            return "";
         }
 
         /// <summary>
         /// Удаляет запись с указанным id.
         /// </summary>
         /// <param name="id">Номер удаляемой записи</param>
-        /// <returns>true, если запись удалена.</returns>
+        /// <returns>true, если запись удалена; false, если такой записи нет.</returns>
         public bool Delete(int id)
         {
             return repository.Delete(id);
@@ -122,7 +131,7 @@ namespace BusinessLogic
             List<Record> res = new List<Record>();
             foreach (Record r in list)
             {
-                if (r.Cause != null && r.Cause.ToLower().Contains(cause.ToLower()))
+                if (r.Cause != null && r.Cause.ToLower().Contains(cause.Trim().ToLower()))
                     res.Add(r);
             }
             return res;
@@ -131,6 +140,7 @@ namespace BusinessLogic
         /// <summary>
         /// Бизнес-функция 2: номера занятых камер по возрастанию.
         /// </summary>
+        /// <returns>Список номеров занятых камер.</returns>
         public List<int> BusyCells()
         {
             return cellService.BusyCells();
@@ -139,6 +149,7 @@ namespace BusinessLogic
         /// <summary>
         /// Бизнес-функция 2: номера свободных камер по возрастанию.
         /// </summary>
+        /// <returns>Список номеров свободных камер.</returns>
         public List<int> FreeCells()
         {
             return cellService.FreeCells(Cells);

@@ -8,6 +8,10 @@ namespace BusinessLogic
         /// <summary>
         /// Проверяет, что ФИО и причина заполнены, возраст от 0 до 120, а дата не раньше 1900 года.
         /// </summary>
+        /// <param name="name">ФИО</param>
+        /// <param name="age">Возраст</param>
+        /// <param name="date">Дата поступления</param>
+        /// <param name="cause">Причина смерти</param>
         /// <returns>Текст ошибки или пустая строка, если все верно.</returns>
         public string Check(string name, int age, DateTime date, string cause)
         {

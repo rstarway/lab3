@@ -13,46 +13,65 @@ namespace BusinessLogic
         int Cells { get; }
 
         /// <summary>
-        /// Добавляет новую запись о поступлении.
+        /// Проверяет данные и добавляет новую запись о поступлении.
         /// </summary>
-        /// <returns>true, если запись добавлена.</returns>
-        bool Add(string name, int age, DateTime date, string cause, int cell);
+        /// <param name="name">ФИО</param>
+        /// <param name="age">Возраст</param>
+        /// <param name="date">Дата поступления</param>
+        /// <param name="cause">Причина смерти</param>
+        /// <param name="cell">Номер камеры</param>
+        /// <returns>Пустая строка, если запись добавлена, иначе текст ошибки.</returns>
+        string Add(string name, int age, DateTime date, string cause, int cell);
 
         /// <summary>
         /// Возвращает список всех записей.
         /// </summary>
+        /// <returns>Список всех записей по возрастанию ID.</returns>
         List<Record> GetAll();
 
         /// <summary>
-        /// Возвращает запись с указанным id или null, если такой нет.
+        /// Возвращает запись с указанным id.
         /// </summary>
+        /// <param name="id">Номер записи</param>
+        /// <returns>Найденная запись или null, если такой нет.</returns>
         Record GetById(int id);
 
         /// <summary>
-        /// Изменяет запись с указанным id.
+        /// Проверяет данные и изменяет запись с указанным id.
         /// </summary>
-        /// <returns>true, если запись изменена.</returns>
-        bool Edit(int id, string name, int age, DateTime date, string cause, int cell);
+        /// <param name="id">Номер изменяемой записи</param>
+        /// <param name="name">ФИО</param>
+        /// <param name="age">Возраст</param>
+        /// <param name="date">Дата поступления</param>
+        /// <param name="cause">Причина смерти</param>
+        /// <param name="cell">Номер камеры</param>
+        /// <returns>Пустая строка, если запись изменена, иначе текст ошибки.</returns>
+        string Edit(int id, string name, int age, DateTime date, string cause, int cell);
 
         /// <summary>
         /// Удаляет запись с указанным id.
         /// </summary>
-        /// <returns>true, если запись удалена.</returns>
+        /// <param name="id">Номер удаляемой записи</param>
+        /// <returns>true, если запись удалена; false, если такой записи нет.</returns>
         bool Delete(int id);
 
         /// <summary>
         /// Ищет записи по причине смерти (часть слова, без учета регистра).
         /// </summary>
+        /// <param name="cause">Текст для поиска</param>
+        /// <returns>Список найденных записей.</returns>
         List<Record> FindByCause(string cause);
 
         /// <summary>
         /// Возвращает номера занятых камер по возрастанию.
         /// </summary>
+        /// <returns>Список номеров занятых камер.</returns>
         List<int> BusyCells();
 
         /// <summary>
         /// Возвращает номера свободных камер по возрастанию.
         /// </summary>
+        /// <returns>Список номеров свободных камер.</returns>
         List<int> FreeCells();
     }
 }

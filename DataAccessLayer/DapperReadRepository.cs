@@ -20,6 +20,7 @@ namespace DataAccessLayer
         /// <summary>
         /// Возвращает все записи по возрастанию ID.
         /// </summary>
+        /// <returns>Список объектов по возрастанию ID (пустой, если записей нет).</returns>
         public List<Record> ReadAll()
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
@@ -31,6 +32,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Возвращает запись с указанным ID или null.
         /// </summary>
+        /// <param name="id">ID объекта</param>
+        /// <returns>Найденный объект или null, если такого нет.</returns>
         public Record ReadById(int id)
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))

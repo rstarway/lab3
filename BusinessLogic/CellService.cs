@@ -13,6 +13,7 @@ namespace BusinessLogic
         /// <summary>
         /// Получает репозиторий только для чтения записей.
         /// </summary>
+        /// <param name="repository">Репозиторий для чтения записей</param>
         public CellService(IReadRepository<Record> repository)
         {
             this.repository = repository;
@@ -21,6 +22,10 @@ namespace BusinessLogic
         /// <summary>
         /// Проверяет номер камеры и ее занятость другими записями. Для новой записи id равен 0.
         /// </summary>
+        /// <param name="cell">Номер камеры</param>
+        /// <param name="id">ID записи, которой нужна камера (0 для новой записи)</param>
+        /// <param name="cells">Количество камер</param>
+        /// <returns>true, если камеру можно занять.</returns>
         public bool CanUse(int cell, int id, int cells)
         {
             if (cell < 1 || cell > cells)
@@ -37,6 +42,7 @@ namespace BusinessLogic
         /// <summary>
         /// Возвращает номера занятых камер по возрастанию.
         /// </summary>
+        /// <returns>Список номеров занятых камер.</returns>
         public List<int> BusyCells()
         {
             List<Record> list = repository.ReadAll();
@@ -50,6 +56,8 @@ namespace BusinessLogic
         /// <summary>
         /// Возвращает номера свободных камер от 1 до cells по возрастанию.
         /// </summary>
+        /// <param name="cells">Количество камер</param>
+        /// <returns>Список номеров свободных камер.</returns>
         public List<int> FreeCells(int cells)
         {
             List<int> busy = BusyCells();

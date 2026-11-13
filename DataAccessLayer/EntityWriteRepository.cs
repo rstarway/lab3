@@ -19,6 +19,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Добавляет объект в базу.
         /// </summary>
+        /// <param name="r">Объект для сохранения</param>
+        /// <returns>true, если объект добавлен; false, если передан null.</returns>
         public bool Add(T r)
         {
             if (r == null)
@@ -33,6 +35,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Удаляет объект с указанным ID.
         /// </summary>
+        /// <param name="id">ID объекта</param>
+        /// <returns>true, если объект удален; false, если такого нет.</returns>
         public bool Delete(int id)
         {
             using (DBContext db = new DBContext())
@@ -48,6 +52,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Сохраняет изменения объекта.
         /// </summary>
+        /// <param name="r">Объект для сохранения</param>
+        /// <returns>true, если объект найден и сохранен; false, если передан null или объекта нет.</returns>
         public bool Update(T r)
         {
             if (r == null)

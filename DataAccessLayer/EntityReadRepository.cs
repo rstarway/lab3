@@ -19,6 +19,7 @@ namespace DataAccessLayer
         /// <summary>
         /// Возвращает все объекты по возрастанию ID.
         /// </summary>
+        /// <returns>Список объектов по возрастанию ID (пустой, если записей нет).</returns>
         public List<T> ReadAll()
         {
             using (DBContext db = new DBContext())
@@ -32,6 +33,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Возвращает объект с указанным ID или null.
         /// </summary>
+        /// <param name="id">ID объекта</param>
+        /// <returns>Найденный объект или null, если такого нет.</returns>
         public T ReadById(int id)
         {
             using (DBContext db = new DBContext())

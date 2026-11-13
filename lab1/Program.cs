@@ -28,6 +28,11 @@ namespace lab1
             Application.Run(f);
         }
 
+        /// <summary>
+        /// Показывает сообщение о любой ошибке, которую не поймали в окнах.
+        /// </summary>
+        /// <param name="sender">Источник ошибки</param>
+        /// <param name="e">Данные ошибки</param>
         static void ShowError(object sender, ThreadExceptionEventArgs e)
         {
             MessageBox.Show("Что-то пошло не так: " + e.Exception.Message, "Ошибка");

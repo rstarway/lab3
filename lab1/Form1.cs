@@ -11,7 +11,6 @@ namespace lab1
     {
         IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
         ILogic logic;
-        RecordValidator validator;
 
         /// <summary>
         /// Открывает окно и загружает записи из базы.
@@ -20,11 +19,14 @@ namespace lab1
         {
             InitializeComponent();
             logic = ninjectKernel.Get<ILogic>();
-            validator = ninjectKernel.Get<RecordValidator>();
             Fill(logic.GetAll());
         }
 
-        void Fill(List<Record> list)
+        /// <summary>
+        /// Показывает записи в таблице.
+        /// </summary>
+        /// <param name="list">Записи для показа</param>
+        private void Fill(List<Record> list)
         {
             dataGridView1.Rows.Clear();
             foreach (Record r in list)
@@ -33,18 +35,31 @@ namespace lab1
             }
         }
 
+        /// <summary>
+        /// Кнопка «Добавить»: открывает карточку, пока запись не добавится или пользователь не нажмет «Отмена».
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button1_Click(object sender, EventArgs e)
         {
-            RecordForm f = new RecordForm(validator);
-            if (f.ShowDialog() == DialogResult.OK)
+            RecordForm f = new RecordForm();
+            while (f.ShowDialog() == DialogResult.OK)
             {
-                if (logic.Add(f.name, f.age, f.date, f.cause, f.cell))
+                string err = logic.Add(f.name, f.age, f.date, f.cause, f.cell);
+                if (err == "")
+                {
                     Fill(logic.GetAll());
-                else
-                    MessageBox.Show("Камера занята или нет такой (1-" + logic.Cells + ")");
+                    return;
+                }
+                MessageBox.Show(err);
             }
         }
 
+        /// <summary>
+        /// Кнопка «Изменить»: открывает карточку выбранной записи.
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button2_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null)
@@ -62,16 +77,24 @@ namespace lab1
                 return;
             }
 
-            RecordForm f = new RecordForm(validator, r);
-            if (f.ShowDialog() == DialogResult.OK)
+            RecordForm f = new RecordForm(r);
+            while (f.ShowDialog() == DialogResult.OK)
             {
-                if (logic.Edit(id, f.name, f.age, f.date, f.cause, f.cell))
+                string err = logic.Edit(id, f.name, f.age, f.date, f.cause, f.cell);
+                if (err == "")
+                {
                     Fill(logic.GetAll());
-                else
-                    MessageBox.Show("Не получилось, проверь камеру");
+                    return;
+                }
+                MessageBox.Show(err);
             }
         }
 
+        /// <summary>
+        /// Кнопка «Удалить»: удаляет выбранную запись после подтверждения.
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button3_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null)
@@ -88,6 +111,11 @@ namespace lab1
             }
         }
 
+        /// <summary>
+        /// Кнопка «Найти»: показывает записи с нужной причиной смерти.
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button5_Click(object sender, EventArgs e)
         {
             List<Record> res = logic.FindByCause(textBox6.Text);
@@ -96,12 +124,22 @@ namespace lab1
                 MessageBox.Show("Ничего не найдено");
         }
 
+        /// <summary>
+        /// Кнопка «Показать все»: сбрасывает поиск.
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button6_Click(object sender, EventArgs e)
         {
             textBox6.Text = "";
             Fill(logic.GetAll());
         }
 
+        /// <summary>
+        /// Кнопка «Камеры»: показывает занятые и свободные камеры.
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button7_Click(object sender, EventArgs e)
         {
             List<int> busy = logic.BusyCells();

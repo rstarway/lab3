@@ -3,12 +3,10 @@ using Model;
 using Ninject;
 
 ILogic logic;
-RecordValidator validator;
 try
 {
     IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
     logic = ninjectKernel.Get<ILogic>();
-    validator = ninjectKernel.Get<RecordValidator>();
 }
 catch (Exception e)
 {
@@ -50,10 +48,11 @@ while (true)
                 Record newRecord = AskRecord();
                 if (newRecord == null)
                     break;
-                if (logic.Add(newRecord.Name, newRecord.Age, newRecord.Date, newRecord.Cause, newRecord.Cell))
+                string addError = logic.Add(newRecord.Name, newRecord.Age, newRecord.Date, newRecord.Cause, newRecord.Cell);
+                if (addError == "")
                     Console.WriteLine("Добавлено");
                 else
-                    Console.WriteLine("Камера занята или нет такой");
+                    Console.WriteLine(addError);
                 break;
 
             case "2":
@@ -63,10 +62,11 @@ while (true)
                 Record changed = AskRecord();
                 if (changed == null)
                     break;
-                if (logic.Edit(id.Value, changed.Name, changed.Age, changed.Date, changed.Cause, changed.Cell))
+                string editError = logic.Edit(id.Value, changed.Name, changed.Age, changed.Date, changed.Cause, changed.Cell);
+                if (editError == "")
                     Console.WriteLine("Изменено");
                 else
-                    Console.WriteLine("Не получилось");
+                    Console.WriteLine(editError);
                 break;
 
             case "3":
@@ -111,6 +111,7 @@ while (true)
     }
 }
 
+// Выводит одну запись одной строкой.
 void Print(Record r)
 {
     Console.WriteLine(r.ID + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
@@ -129,7 +130,8 @@ int? AskNumber(string question, string error)
     return n;
 }
 
-// Спрашивает все поля записи. Если что-то введено неверно, пишет ошибку и возвращает null.
+// Спрашивает все поля записи. Если возраст, дата или камера не числа, пишет ошибку и возвращает null.
+// Остальные поля проверяет бизнес-логика.
 Record AskRecord()
 {
     Record r = new Record();
@@ -157,14 +159,5 @@ Record AskRecord()
     if (cell == null)
         return null;
     r.Cell = cell.Value;
-
-    string err = validator.Check(r.Name, r.Age, r.Date, r.Cause);
-    if (err != "")
-    {
-        Console.WriteLine(err);
-        return null;
-    }
-    r.Name = r.Name.Trim();
-    r.Cause = r.Cause.Trim();
     return r;
 }

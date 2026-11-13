@@ -1,15 +1,12 @@
-using BusinessLogic;
 using Model;
 
 namespace lab1
 {
     /// <summary>
-    /// Окно карточки записи: ввод и проверка данных.
+    /// Окно карточки записи: ввод данных. Проверку данных делает бизнес-логика.
     /// </summary>
     public partial class RecordForm : Form
     {
-        RecordValidator validator;
-
         /// <summary>
         /// ФИО после нажатия ОК.
         /// </summary>
@@ -38,23 +35,19 @@ namespace lab1
         /// <summary>
         /// Открывает пустую карточку для новой записи.
         /// </summary>
-        /// <param name="validator">Проверка полей записи</param>
-        public RecordForm(RecordValidator validator)
+        public RecordForm()
         {
             InitializeComponent();
-            this.validator = validator;
             Text = "Новая запись";
         }
 
         /// <summary>
         /// Открывает карточку с данными записи для изменения.
         /// </summary>
-        /// <param name="validator">Проверка полей записи</param>
         /// <param name="r">Изменяемая запись</param>
-        public RecordForm(RecordValidator validator, Record r)
+        public RecordForm(Record r)
         {
             InitializeComponent();
-            this.validator = validator;
             Text = "Изменение записи";
             textBox1.Text = r.Name;
             textBox2.Text = r.Age.ToString();
@@ -64,6 +57,11 @@ namespace lab1
             textBox4.Text = r.Cell.ToString();
         }
 
+        /// <summary>
+        /// Кнопка «ОК»: переводит возраст и камеру в числа и закрывает окно.
+        /// </summary>
+        /// <param name="sender">Кнопка</param>
+        /// <param name="e">Данные события</param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (!int.TryParse(textBox2.Text, out age))
@@ -77,16 +75,9 @@ namespace lab1
                 return;
             }
 
-            string err = validator.Check(textBox1.Text, age, dateTimePicker1.Value, textBox3.Text);
-            if (err != "")
-            {
-                MessageBox.Show(err);
-                return;
-            }
-
-            name = textBox1.Text.Trim();
+            name = textBox1.Text;
             date = dateTimePicker1.Value.Date;
-            cause = textBox3.Text.Trim();
+            cause = textBox3.Text;
             DialogResult = DialogResult.OK;
         }
     }

@@ -20,6 +20,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Добавляет запись в базу и записывает ей новый ID.
         /// </summary>
+        /// <param name="r">Объект для сохранения</param>
+        /// <returns>true, если объект добавлен; false, если передан null.</returns>
         public bool Add(Record r)
         {
             if (r == null)
@@ -35,6 +37,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Удаляет запись с указанным ID.
         /// </summary>
+        /// <param name="id">ID объекта</param>
+        /// <returns>true, если объект удален; false, если такого нет.</returns>
         public bool Delete(int id)
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
@@ -46,6 +50,8 @@ namespace DataAccessLayer
         /// <summary>
         /// Сохраняет изменения записи.
         /// </summary>
+        /// <param name="r">Объект для сохранения</param>
+        /// <returns>true, если объект найден и сохранен; false, если передан null или объекта нет.</returns>
         public bool Update(Record r)
         {
             if (r == null)
